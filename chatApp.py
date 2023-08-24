@@ -86,6 +86,8 @@ def sendMSG(room):
         user=session['username']
         file = open('./rooms/'+ room +'.txt', 'w+')
         user_mssage=new_room = request.form['msg']
+        #message in format:  [2023-08-21 11:00:11] yuval: hello
+        #full_message=
         file.close()
         #return redirect('/chat/' + new_room, room=new_room)
         return redirect('chat/' + new_room ,)  
