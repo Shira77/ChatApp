@@ -1,9 +1,7 @@
-from flask import Flask, render_template, request, redirect,session
 import csv
-import base64
-import os
+from flask import Flask, render_template, request, redirect
+server = Flask(__name__)
 
-server = Flask(__name__) 
 
 def chechUserExist(username,password):
   with open('users.csv', 'r', newline='') as usersExist:
@@ -23,12 +21,13 @@ def login():
           session['username'] = username
           return redirect('lobby')
     return render_template('login.html')
-#אתחול החדרים הקיימים 
-rooms = []
-for filename in os.listdir("rooms"):
-    if filename.endswith(".txt"):
-       room_name = filename[:-4]
-       rooms.append(room_name)   
-    
 if __name__ == "__main__":
-    server.run(host='0.0.0.0', port="5000")
+    server.run(host='0.0.0.0', port="5000", debug=True)
+    
+    
+    
+@server.route("/lobby", methods=['GET','POST'])
+def lobbyPage():
+        return render_template('login.html')    
+    
+    
