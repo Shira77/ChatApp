@@ -1,6 +1,7 @@
 from flask import Flask , redirect,request,render_template
 import csv
 import os
+import base64
 server = Flask(__name__)
 def chechUserExist(username,password):
   with open('users.csv', "r") as usersExist:
@@ -21,6 +22,30 @@ def login():
        
     return render_template('login.html')
 
+
+@server.route("/register", methods=['GET','POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        #print(username, password)
+        #בדיקות תקינות לנתונים
+        #הצפנת סיסמא
+        encrypted_password = base64.b64encode(password.encode())
+        #בדיקה אם השם משתמש והסיסמא קיימים
+        
+        with open("users.csv", "r") as f:
+            reader = csv.reader(f)
+            for row in reader:
+                # Check if the name and phone number are in the row
+                if row[0] == username and row[1] == encrypted_password:
+                  return redirect('login')
+            
+        with open("users.csv", 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow([username, encrypted_password])
+        return redirect('login')
+    return render_template('register.html')
 
 
 @server.route('/lobby', methods = ['POST','GET'])
