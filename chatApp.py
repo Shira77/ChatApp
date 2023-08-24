@@ -3,12 +3,14 @@ import csv
 import os
 import base64
 server = Flask(__name__)
+
+
 def chechUserExist(username,password):
-  with open('users.csv', "r") as usersExist:
+  with open('users.csv', 'r', newline='') as usersExist:
     users=csv.reader(usersExist)
-  for user in users:
-      if(user[0] == username and user[1] == password):
-          return True 
+    for user in users:
+        if(user[0] == username and user[1] == password):
+           return True 
   return False  
 
 @server.route("/login", methods=['GET','POST'])
@@ -16,10 +18,10 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        if(chechUserExist(username, password)):
+        b=chechUserExist(username, password)
+        if(b):
+          session['username'] = username
           return redirect('lobby')
-
-       
     return render_template('login.html')
 
 
@@ -90,22 +92,11 @@ def sendMSG(room):
         #full_message=
         file.close()
         #return redirect('/chat/' + new_room, room=new_room)
-        return redirect('chat/' + new_room ,)  
+        return redirect('chat/' + new_room ,) 
     
-
     
-    # try:
-    #     file=open("./rooms/" +room + ".txt", "W+")
-    #     content = file.read()
-    #     file.close()
-    #     return content
-    # except IOError:
-    #     return "Room does not exist!!"
-    # except:
-    #     return "You have an error"
-
-
-        #roomName = user = request.args.get('rname')
-
+    
 if __name__ == "__main__":
     server.run(host='0.0.0.0')
+    
+    
