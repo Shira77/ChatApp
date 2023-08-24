@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template, request, redirect, url_for, session
 import csv
 import os
 server = Flask(__name__)
@@ -36,36 +36,46 @@ def lobby():
             file = open('./rooms/'+ new_room +'.txt', 'w+')
             file.close()
             #return redirect('/chat/' + new_room, room=new_room)
-            return render_template('chat.html',room=new_room)  
+            return redirect('chat/' + new_room ,)  
 
     return render_template("lobby.html")
-
-#######my:
-
-# @server.route("/lobby", methods=['POST'])
-# def lobby():
-#     roomName = request.args.get('rname')
-#     f = open(str('/rooms/') + str(roomName) + ".txt" ,"w+")
-#     f.close()
-#     for room in rooms:
-#         if room == roomName:
-#             return "Room Name already exist!!"
-#     rooms.append(roomName)
-#     return redirect(url_for('/chat/' + str(roomName), room_names = room))
-#     return "you succeed!!"    
 
 @server.route("/chat/<room>")
 def chat(room):
     return render_template('chat.html',room=room)
-# # Get the room from the parameter
-#     room = request.args.get('room')
 
-#     # Check if the room exists
-#     if room not in rooms:
-#         return render_template('error.html', message="The room does not exist.")
+# @server.route("/chat/<room>",  methods = ['GET'])
+# def update(room):
+#     file_path='./rooms/'+ room +'.txt'
+#     if os.path.getsize(file_path) == 0:
+#         return "No messages yet"
+#     with open(file_path, 'w+') as file:
+#                 content = file.read()
+#                 file.close()
+#                 return content
 
-#     # Render the chat room page
-#     return render_template('chat.html', room=room)
+
+@server.route('/api/chat/<room>', methods = ['POST'])
+def sendMSG(room):
+    if request.method == 'POST':
+        user=session['username']
+        file = open('./rooms/'+ room +'.txt', 'w+')
+        user_mssage=new_room = request.form['msg']
+        file.close()
+        #return redirect('/chat/' + new_room, room=new_room)
+        return redirect('chat/' + new_room ,)  
+    
+
+    
+    # try:
+    #     file=open("./rooms/" +room + ".txt", "W+")
+    #     content = file.read()
+    #     file.close()
+    #     return content
+    # except IOError:
+    #     return "Room does not exist!!"
+    # except:
+    #     return "You have an error"
 
 
         #roomName = user = request.args.get('rname')
