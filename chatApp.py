@@ -4,6 +4,8 @@ import os
 import base64
 from datetime import datetime
 server = Flask(__name__)
+
+#server.config['static_folder'] = 'CHATAPP/static'
 #define env variable
 os.environ["ROOM_PATH"] = "./rooms"
 server.secret_key="123"
@@ -39,7 +41,8 @@ def login():
             session['username'] = username
             return redirect('lobby')
         else:
-            return "wrong usernaname or pass"       
+            #return redirect('error/'+ static_folder) #"wrong usernaname or pass" + str(static_folder)       
+            return "wrong usernaname or password"       
     return render_template('login.html')
 
 @server.route("/register", methods=['GET','POST'])
