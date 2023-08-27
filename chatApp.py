@@ -3,15 +3,24 @@ import csv
 import os
 import base64
 
+
+
+#define env variable
+os.environ["ROOM_PATH"] = "/rooms"
+
+
+
 server = Flask(__name__)
+server.secret_key="secret_key"
 #check if user exit in the csv
 def chechUserExist(username,password):
-  with open('users.csv', "r") as usersExist:
-    users=csv.reader(usersExist)
-  for user in users:
-      if(user[0] == username and user[1] == password):
-          return True 
-  return False  
+    with open('users.csv', "r", newline="") as usersExist:
+        users=csv.reader(usersExist)
+        for user in users:
+            if(user[0] == username and user[1] == decode_password(password)):
+                return True 
+    return False  
+
 
 #encode password
 def encode_password(user_pass):
@@ -32,9 +41,12 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        if(chechUserExist(username, password)):
+        if chechUserExist(username, password):
             session['username'] = username
-            return redirect('lobby')
+            return redirect('register')
+        else:
+            return "Invalid credentials. Please try again."
+            #return "Hello"
 
        
     return render_template('login.html')
@@ -49,12 +61,11 @@ def register():
         #הצפנת סיסמא
         encrypted_password = encode_password(password)
         #בדיקה אם השם משתמש והסיסמא קיימים
-        
         with open("users.csv", "r") as f:
             reader = csv.reader(f)
             for row in reader:
                 # Check if the name and phone number are in the row
-                if(chechUserExist(username, encrypted_password)):
+                if row[0] == username and row[1] == encrypted_password:
                     return redirect('login')
             
         with open("users.csv", 'w', newline='') as file:
@@ -66,20 +77,22 @@ def register():
 
 @server.route('/lobby', methods = ['POST','GET'])
 def lobby():
+    # if not session.get("username"):
+    #     return redirect("/")
     if request.method == 'POST':
         rooms = os.listdir('rooms/')
         new_room = request.form['new_room']
         if (str(new_room) + '.txt') in rooms:
-            print("exist in:" )
+            #print("exist in:" )
             return "exist"
         else:
             rooms.append(new_room)
             file = open('./rooms/'+ new_room +'.txt', 'w+')
             file.close()
             #return redirect('/chat/' + new_room, room=new_room)
-            return render_template('chat.html',room=new_room)  
+            return render_template('chat.html', room=new_room)  
 
-    return render_template("lobby.html")
+    return render_template('lobby.html')
 
 @server.route('/logout', methods = ['POST','GET'])
 def logout():
