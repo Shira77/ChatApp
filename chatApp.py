@@ -67,7 +67,8 @@ def register():
 
 @server.route('/lobby', methods = ['POST','GET'])
 def lobby():
-    if request.method == 'POST':
+   rooms = os.listdir('rooms/')
+   if request.method == 'POST':
         new_room = request.form['new_room']
         if (str(new_room) + '.txt') in rooms:
             #print("exist in:" )
@@ -77,8 +78,8 @@ def lobby():
             file.close()
             return redirect('chat/' + new_room)
             #return redirect('/chat/' + new_room, room=new_room)
-    all_rooms=[x[:-4] for x in rooms]
-    return render_template("lobby.html", all_rooms = all_rooms) 
+   all_rooms=[x[:-4] for x in rooms]
+   return render_template("lobby.html", all_rooms = all_rooms) 
 
    
 
