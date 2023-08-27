@@ -1,8 +1,10 @@
-from flask import Flask , redirect,request,render_template
+from flask import Flask , redirect,request,render_template,session
 import csv
 import os
 import base64
+
 server = Flask(__name__)
+#check if user exit in the csv
 def chechUserExist(username,password):
   with open('users.csv', "r") as usersExist:
     users=csv.reader(usersExist)
@@ -11,13 +13,28 @@ def chechUserExist(username,password):
           return True 
   return False  
 
+#encode password
+def encode_password(user_pass):
+    pass_bytes = user_pass.encode('ascii')
+    base64_bytes = base64.b64encode(pass_bytes)
+    base64_message = base64_bytes.decode('ascii')
+    return base64_message
+
+#decode password
+def decode_password(user_pass):
+    base64_bytes = user_pass.encode('ascii')
+    pass_bytes = base64.b64decode(base64_bytes)
+    user_pass = pass_bytes.decode('ascii')
+    return user_pass
+
 @server.route("/login", methods=['GET','POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
         if(chechUserExist(username, password)):
-          return redirect('lobby')
+            session['username'] = username
+            return redirect('lobby')
 
        
     return render_template('login.html')
@@ -28,18 +45,17 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        #print(username, password)
         #בדיקות תקינות לנתונים
         #הצפנת סיסמא
-        encrypted_password = base64.b64encode(password.encode())
+        encrypted_password = encode_password(password)
         #בדיקה אם השם משתמש והסיסמא קיימים
         
         with open("users.csv", "r") as f:
             reader = csv.reader(f)
             for row in reader:
                 # Check if the name and phone number are in the row
-                if row[0] == username and row[1] == encrypted_password:
-                  return redirect('login')
+                if(chechUserExist(username, encrypted_password)):
+                    return redirect('login')
             
         with open("users.csv", 'w', newline='') as file:
             writer = csv.writer(file)
@@ -65,8 +81,10 @@ def lobby():
 
     return render_template("lobby.html")
 
-#######my:
-
+@server.route('/logout', methods = ['POST','GET'])
+def logout():
+    session.pop('username', None)
+    return redirect('register')
 # @server.route("/lobby", methods=['POST'])
 # def lobby():
 #     roomName = request.args.get('rname')
