@@ -1,20 +1,20 @@
-from flask import Flask, render_template, request, redirect, url_for, session 
+from flask import Flask, render_template, request, redirect, session 
 import csv
 import os
 import base64
 from datetime import datetime
 server = Flask(__name__)
 #define env variable
-os.environ["ROOM_PATH"] = "/rooms"
+os.environ["ROOM_PATH"] = "./rooms"
+server.secret_key="123"
 
 def chechUserExist(username,password):
-   with open('users.csv', "r", newline="") as usersExist:
+   with open('users.csv', "r") as usersExist:
         users=csv.reader(usersExist)
         for user in users:
-            if(user[0] == username and user[1] == decode_password(password)):
+            if(user[0] == username and decode_password(user[1]) == password):
                 return True 
         return False 
-
 
 #encode password
 def encode_password(user_pass):
@@ -38,31 +38,24 @@ def login():
         if(chechUserExist(username, password)):
             session['username'] = username
             return redirect('lobby')
-
-       
+        else:
+            return "wrong usernaname or pass"       
     return render_template('login.html')
-
 
 @server.route("/register", methods=['GET','POST'])
 def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        #בדיקות תקינות לנתונים
-        #הצפנת סיסמא
-        encrypted_password = encode_password(password)
-        #בדיקה אם השם משתמש והסיסמא קיימים
-        with open("users.csv", "r") as f:
-            reader = csv.reader(f)
-            for row in reader:
-                # Check if the name and phone number are in the row
-                if row[0] == username and row[1] == encrypted_password:
-                  return redirect('login')
-            
-        with open("users.csv", 'w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow([username, encrypted_password])
-        return redirect('login')
+        if(chechUserExist(username, password)):
+            return "username and pass already exist"
+        else:
+            encrypted_password = encode_password(password)
+        #כתיבה לקובץ
+            with open("users.csv", 'w') as file:
+                writer = csv.writer(file)
+                writer.writerow([username, encrypted_password])
+            return redirect('login')
     return render_template('register.html')
 
 @server.route('/lobby', methods = ['POST','GET'])
@@ -80,8 +73,6 @@ def lobby():
             #return redirect('/chat/' + new_room, room=new_room)
    all_rooms=[x[:-4] for x in rooms]
    return render_template("lobby.html", all_rooms = all_rooms) 
-
-   
 
 @server.route('/logout', methods = ['POST','GET'])
 def logout():
