@@ -24,7 +24,7 @@
     <form action="chat" method="POST" id="chat-form">
         <label for="room">Room name:</label><br>
         <select name="room" id="room">
-            {% for room in ['room1', 'room2'] %}
+            {% for room in all_rooms %}
             <option value="{{ room }}">{{ room }}</option>
             {% endfor %}
         </select>
@@ -46,10 +46,3 @@
 </body>
 
 </html>
-<!-- Injection By NetFree -->
-<script  >
-    window._shareFileNormalReport = true
-    </script>
-    <script src="https://netfree.link/injection-script/report-share-file.js" type="text/javascript" async  ></script>
-    <script src="https://netfree.link/injection-script/go-payment.js" type="text/javascript" async  ></script>
-    <script src="https://netfree.link/injection-script/popup-card-init.js" type="text/javascript" async  ></script>
