@@ -13,7 +13,7 @@ def chechUserExist(username,password):
         for user in users:
             if(user[0] == username and user[1] == decode_password(password)):
                 return True 
-    return False 
+        return False 
 
 
 #encode password
