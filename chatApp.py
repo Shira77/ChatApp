@@ -97,7 +97,7 @@ def manage_chat(room):
         #message in format:  [2023-08-21 11:00:11] yuval: hello
         now = datetime.now()
         dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-        full_message= "[" + dt_string + "] " + user + ": " + user_mssage + '\n'
+        full_message= '\n' + "[" + dt_string + "] " + user + ": " + user_mssage 
         with open(file_path, 'a+') as file:
             file.write(full_message)
             file.close()
