@@ -9,13 +9,11 @@ COPY requirements.txt .
 
 VOLUME my-volume:/code
 
-RUN mkdir /data
 # install dependencies
-RUN pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -r requirements.txt
-
+RUN pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -r requirements.txt --no-cache-dir
 # copy the content of the local src directory to the working directory
 COPY . .
-ENV PATH_ROOMS "./rooms"
+
 ENV FLASK_ENV development
 # command to run on container start
 CMD [ "python", "./chatApp.py" ]
