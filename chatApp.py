@@ -14,8 +14,9 @@ def chechUserExist(username,password):
    with open('users.csv', "r") as usersExist:
         users=csv.reader(usersExist)
         for user in users:
-            if(user[0] == username and decode_password(user[1]) == password):
-                return True 
+            if user:
+                if(user[0] == username and user[1] == password):
+                    return True 
         return False 
 
 #encode password
@@ -32,25 +33,42 @@ def decode_password(user_pass):
     user_pass = pass_bytes.decode('ascii')
     return user_pass
 
+# @server.route("/login", methods=['GET','POST'])
+# def login():
+#     if request.method == 'POST':
+#         username = request.form.get('username')
+#         password = request.form['password']
+#         if(chechUserExist(username, encode_password(password))):
+#             session['username'] = username
+#             return redirect('lobby')
+#         else:
+#             #return redirect('error/'+ static_folder) #"wrong usernaname or pass" + str(static_folder)       
+#             return "wrong usernaname or password"       
+#     return render_template('login.html')
+
 @server.route("/login", methods=['GET','POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        if(chechUserExist(username, password)):
-            session['username'] = username
-            return redirect('lobby')
+        username = request.form.get('username')
+        if username is not None:
+            password = request.form['password']
+            if(chechUserExist(username, encode_password(password))):
+                session['username'] = username
+                return redirect('lobby')
+            else:
+                #return redirect('error/'+ static_folder) #"wrong usernaname or pass" + str(static_folder)       
+                return "wrong usernaname or password"       
         else:
-            #return redirect('error/'+ static_folder) #"wrong usernaname or pass" + str(static_folder)       
-            return "wrong usernaname or password"       
+            return "username is required"
     return render_template('login.html')
+
 
 @server.route("/register", methods=['GET','POST'])
 def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        if(chechUserExist(username, password)):
+        if(chechUserExist(username, encode_password(password))):
             return "username and pass already exist"
         else:
             encrypted_password = encode_password(password)
