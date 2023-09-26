@@ -5,6 +5,7 @@ import base64
 from datetime import datetime
 server = Flask(__name__)
 
+
 #server.config['static_folder'] = 'CHATAPP/static'
 #define env variable
 os.environ["ROOM_PATH"] = "./rooms"
